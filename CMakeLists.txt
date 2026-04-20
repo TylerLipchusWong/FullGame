@@ -15,4 +15,4 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(Vulkan REQUIRED)
 
 add_subdirectory(engine)
-add_subdirectory(game)
+add_subdirectory(00_Game)
