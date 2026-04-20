@@ -7,7 +7,11 @@
 namespace Engine::Core {
 
 bool Application::Initialize() {
-    Logger::Initialize();
+    if (!Logger::Initialize()) {
+        return false;
+    }
+
+    Logger::Log(LogLevel::Info, "Starting application initialization");
 
     if (!m_window.Create("ThirdPersonSandbox - Phase 1", 1600, 900)) {
         Logger::Log(LogLevel::Error, "Window initialization failed");
@@ -25,11 +29,13 @@ bool Application::Initialize() {
 
     glfwSetInputMode(m_window.NativeHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     m_lastFrameTime = std::chrono::steady_clock::now();
-    Logger::Log(LogLevel::Info, "Application initialized");
+    Logger::Log(LogLevel::Info, "Application initialized successfully");
     return true;
 }
 
 int Application::Run() {
+    Logger::Log(LogLevel::Info, "Entering main loop");
+
     while (!m_window.ShouldClose()) {
         m_window.PollEvents();
         m_input.BeginFrame();
@@ -55,6 +61,7 @@ int Application::Run() {
         }
     }
 
+    Logger::Log(LogLevel::Info, "Main loop exited normally");
     return 0;
 }
 

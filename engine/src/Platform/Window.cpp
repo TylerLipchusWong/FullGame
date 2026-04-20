@@ -6,7 +6,19 @@
 
 namespace Engine::Platform {
 
+namespace {
+
+void GlfwErrorCallback(int errorCode, const char* description) {
+    Engine::Core::Logger::Log(
+        Engine::Core::LogLevel::Error,
+        "GLFW error " + std::to_string(errorCode) + ": " + (description != nullptr ? description : "Unknown"));
+}
+
+} // namespace
+
 bool Window::Create(const std::string& title, int width, int height) {
+    glfwSetErrorCallback(GlfwErrorCallback);
+
     if (!glfwInit()) {
         Core::Logger::Log(Core::LogLevel::Error, "Failed to initialize GLFW");
         return false;

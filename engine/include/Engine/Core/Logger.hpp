@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fstream>
 #include <mutex>
 #include <string>
 
@@ -14,7 +15,7 @@ enum class LogLevel {
 
 class Logger {
 public:
-    static void Initialize();
+    static bool Initialize();
     static void Shutdown();
 
     static void Log(LogLevel level, const std::string& message);
@@ -22,6 +23,8 @@ public:
 private:
     static const char* LevelToString(LogLevel level);
     static std::mutex s_mutex;
+    static std::ofstream s_logFile;
+    static bool s_isInitialized;
 };
 
 } // namespace Engine::Core

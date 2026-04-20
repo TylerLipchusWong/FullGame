@@ -87,6 +87,11 @@ void VulkanRenderer::Shutdown() {
 }
 
 bool VulkanRenderer::CreateInstance() {
+    if (glfwVulkanSupported() == GLFW_FALSE) {
+        Core::Logger::Log(Core::LogLevel::Error, "GLFW reports Vulkan is not supported on this machine");
+        return false;
+    }
+
     VkApplicationInfo appInfo {VK_STRUCTURE_TYPE_APPLICATION_INFO};
     appInfo.pApplicationName = "ThirdPersonSandbox";
     appInfo.applicationVersion = VK_MAKE_VERSION(0, 1, 0);
@@ -96,6 +101,10 @@ bool VulkanRenderer::CreateInstance() {
 
     uint32_t extensionCount = 0;
     const char** extensions = glfwGetRequiredInstanceExtensions(&extensionCount);
+    if (extensions == nullptr || extensionCount == 0) {
+        Core::Logger::Log(Core::LogLevel::Error, "Failed to query required Vulkan instance extensions from GLFW");
+        return false;
+    }
 
     VkInstanceCreateInfo createInfo {VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
     createInfo.pApplicationInfo = &appInfo;

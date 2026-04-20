@@ -2,11 +2,11 @@
 
 ## Quick Launch
 
-To make the game easy to find, use the launcher in the repository root:
+Use the launcher in the repository root:
 
 - `LaunchGame.bat`
 
-The launcher now keeps the terminal open and prints the game's exit code so startup failures are visible.
+The launcher keeps the terminal open, prints the exit code, and points to `FullGame.log`.
 
 ## Build
 
@@ -15,10 +15,16 @@ cmake -S . -B build
 cmake --build build --config Debug
 ```
 
-## Startup Troubleshooting (Windows)
+## Crash Troubleshooting (Windows)
 
-If a window appears and immediately closes, verify:
+If the game window appears then closes, do this:
 
-1. Vulkan runtime/driver is installed and up to date.
-2. GLFW is available to CMake (`glfw3Config.cmake` discoverable).
-3. Build and run configuration match (`Debug` executable exists).
+1. Run `LaunchGame.bat` again.
+2. Open `FullGame.log` in the repository root.
+3. Share the final 30 log lines.
+
+Common causes:
+
+- Vulkan runtime/driver missing or outdated.
+- `glfw3` not found at configure time (`glfw3Config.cmake` missing from CMake search paths).
+- Running executable from a different build config than expected.
