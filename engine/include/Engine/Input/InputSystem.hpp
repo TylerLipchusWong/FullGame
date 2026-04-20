@@ -21,8 +21,8 @@ public:
     double MouseDeltaY() const;
 
 private:
-    static constexpr int kMaxKeys = 512;
-    static constexpr int kMaxButtons = 8;
+    static constexpr int kMaxKeys = 349; // GLFW_KEY_LAST + 1
+    static constexpr int kMaxButtons = 8; // GLFW_MOUSE_BUTTON_LAST + 1
 
     GLFWwindow* m_window {nullptr};
     std::array<bool, kMaxKeys> m_currentKeys {};

@@ -381,6 +381,11 @@ bool VulkanRenderer::BeginFrame() {
         VK_NULL_HANDLE,
         &m_currentImageIndex);
 
+    if (acquireResult == VK_ERROR_OUT_OF_DATE_KHR || acquireResult == VK_SUBOPTIMAL_KHR) {
+        Core::Logger::Log(Core::LogLevel::Warning, "Swapchain became out of date during image acquire");
+        return false;
+    }
+
     if (acquireResult != VK_SUCCESS) {
         Core::Logger::Log(Core::LogLevel::Error, "Failed to acquire swapchain image");
         return false;
@@ -417,7 +422,7 @@ bool VulkanRenderer::BeginFrame() {
     return true;
 }
 
-void VulkanRenderer::EndFrame() {
+bool VulkanRenderer::EndFrame() {
     VkCommandBuffer commandBuffer = m_commandBuffers[m_currentImageIndex];
 
     VkSemaphore waitSemaphores[] = {m_imageAvailableSemaphore};
@@ -433,7 +438,10 @@ void VulkanRenderer::EndFrame() {
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, m_inFlightFence);
+    if (vkQueueSubmit(m_graphicsQueue, 1, &submitInfo, m_inFlightFence) != VK_SUCCESS) {
+        Core::Logger::Log(Core::LogLevel::Error, "Failed to submit render work to graphics queue");
+        return false;
+    }
 
     VkSwapchainKHR swapchains[] = {m_swapchain};
     VkPresentInfoKHR presentInfo {VK_STRUCTURE_TYPE_PRESENT_INFO_KHR};
@@ -443,7 +451,18 @@ void VulkanRenderer::EndFrame() {
     presentInfo.pSwapchains = swapchains;
     presentInfo.pImageIndices = &m_currentImageIndex;
 
-    vkQueuePresentKHR(m_graphicsQueue, &presentInfo);
+    const VkResult presentResult = vkQueuePresentKHR(m_graphicsQueue, &presentInfo);
+    if (presentResult == VK_ERROR_OUT_OF_DATE_KHR || presentResult == VK_SUBOPTIMAL_KHR) {
+        Core::Logger::Log(Core::LogLevel::Warning, "Swapchain became out of date during present");
+        return false;
+    }
+
+    if (presentResult != VK_SUCCESS) {
+        Core::Logger::Log(Core::LogLevel::Error, "Failed to present swapchain image");
+        return false;
+    }
+
+    return true;
 }
 
 void VulkanRenderer::DestroySwapchainResources() {

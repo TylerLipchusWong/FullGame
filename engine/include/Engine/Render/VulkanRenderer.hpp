@@ -14,7 +14,7 @@ public:
     void Shutdown();
 
     bool BeginFrame();
-    void EndFrame();
+    bool EndFrame();
 
 private:
     bool CreateInstance();

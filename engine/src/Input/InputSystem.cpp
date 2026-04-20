@@ -6,9 +6,11 @@ namespace Engine::Input {
 
 void InputSystem::Initialize(GLFWwindow* window) {
     m_window = window;
-    glfwGetCursorPos(m_window, &m_mouseX, &m_mouseY);
-    m_prevMouseX = m_mouseX;
-    m_prevMouseY = m_mouseY;
+    if (m_window != nullptr) {
+        glfwGetCursorPos(m_window, &m_mouseX, &m_mouseY);
+        m_prevMouseX = m_mouseX;
+        m_prevMouseY = m_mouseY;
+    }
 }
 
 void InputSystem::Shutdown() {
@@ -16,6 +18,10 @@ void InputSystem::Shutdown() {
 }
 
 void InputSystem::BeginFrame() {
+    if (m_window == nullptr) {
+        return;
+    }
+
     m_previousKeys = m_currentKeys;
 
     for (int key = 0; key < kMaxKeys; ++key) {

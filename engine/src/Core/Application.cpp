@@ -10,6 +10,8 @@ bool Application::Initialize() {
     Logger::Initialize();
 
     if (!m_window.Create("ThirdPersonSandbox - Phase 1", 1600, 900)) {
+        Logger::Log(LogLevel::Error, "Window initialization failed");
+        Shutdown();
         return false;
     }
 
@@ -17,6 +19,7 @@ bool Application::Initialize() {
 
     if (!m_renderer.Initialize(m_window.NativeHandle(), m_window.Width(), m_window.Height())) {
         Logger::Log(LogLevel::Error, "Renderer initialization failed");
+        Shutdown();
         return false;
     }
 
@@ -46,7 +49,10 @@ int Application::Run() {
             return 1;
         }
 
-        m_renderer.EndFrame();
+        if (!m_renderer.EndFrame()) {
+            Logger::Log(LogLevel::Error, "EndFrame failed");
+            return 1;
+        }
     }
 
     return 0;
